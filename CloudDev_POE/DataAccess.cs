@@ -85,6 +85,33 @@ namespace CloudDev_POE
             return art;
         }
 
+        private void ExecuteNonQuery(string sql, List<SqlParameter> parameters)
+        {
+            try
+            {
+                connection.Open();
+                command = new SqlCommand(sql, connection);
+                if (parameters != null)
+                {
+                    foreach (var param in parameters)
+                    {
+                        command.Parameters.Add(param);
+                    }
+                }
+                command.ExecuteNonQuery();
+            }
+            catch (SqlException ex)
+            {
+                // Log exception
+                throw new Exception("Database operation failed", ex);
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
+
+
         public void SubmitOrder(List<Product> cart)
         {
             double total = 0;
@@ -95,17 +122,17 @@ namespace CloudDev_POE
                 orderString += $"{item.name},";
             }
 
+            string sql = "INSERT INTO Orders(orderTime, orderTotal, orderDetails, userID, status) VALUES (@orderTime, @orderTotal, @orderDetails, @userID, @status)";
+            List<SqlParameter> parameters = new List<SqlParameter>
+            {
+                new SqlParameter("@orderTime", DateTime.Now),
+                new SqlParameter("@orderTotal", total),
+                new SqlParameter("@orderDetails", orderString),
+                new SqlParameter("@userID", UserHolder.loggedInUser.Id),
+                new SqlParameter("@status", "open")
+            };
 
-            connection.Open();
-            string sql = "INSERT INTO Orders VALUES (@orderTime, @orderTotal, @orderDetails, @userId, @status)";
-            command = new SqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@orderTime", DateTime.Now);
-            command.Parameters.AddWithValue("@orderTotal", total);
-            command.Parameters.AddWithValue("@orderDetails", orderString);
-            command.Parameters.AddWithValue("@status", "open");
-            command.Parameters.AddWithValue("@userId", UserHolder.loggedInUser.Id);
-            command.ExecuteNonQuery();
-            connection.Close();
+            ExecuteNonQuery(sql, parameters);
         }
 
         public List<Order> GetAllOrders()
@@ -177,12 +204,12 @@ namespace CloudDev_POE
         public void AddNewProduct(Product item)
         {
             connection.Open();
-            string sql = "INSERT INTO Menu VALUES (@name, @description, @price, @imageURL)";
+            string sql = "INSERT INTO Products VALUES (@name, @description, @price, @imageURL)";
             command = new SqlCommand(sql, connection);
             command.Parameters.AddWithValue("@name", item.name);
             command.Parameters.AddWithValue("@description", item.description);
             command.Parameters.AddWithValue("@price", item.price);
-            command.Parameters.AddWithValue("@imageURl", item.imageSRC);
+            command.Parameters.AddWithValue("@imageSRC", item.imageSRC);
             command.ExecuteNonQuery();
             connection.Close();
         }

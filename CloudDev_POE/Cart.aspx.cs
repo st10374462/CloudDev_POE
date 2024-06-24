@@ -8,7 +8,7 @@ using System.Web.UI.WebControls;
 namespace CloudDev_POE
 {
     public partial class WebForm5 : System.Web.UI.Page
-    {            
+    {
         DataAccess da = new DataAccess();
 
         protected void Page_Load(object sender, EventArgs e)
@@ -24,15 +24,23 @@ namespace CloudDev_POE
             {
                 dgCart.DataSource = CartHolder.cart;
                 dgCart.DataBind();
-                dgCart.Columns.RemoveAt(0);
-                dgCart.Columns.RemoveAt(4);
 
+                // Ensure there are enough columns before removing
+                if (dgCart.Columns.Count > 0)
+                {
+                    dgCart.Columns.RemoveAt(0); // Remove first column if it exists
+                }
 
+                if (dgCart.Columns.Count > 3)
+                {
+                    dgCart.Columns.RemoveAt(3); // Remove fourth column if it exists
+                }
 
                 lblEmpty.Visible = false;
                 dgCart.Visible = true;
                 btnClearCart.Visible = true;
                 btnSubmitOrder.Visible = true;
+
             }
         }
         protected void btnSubmitOrder_Click(object sender, EventArgs e)

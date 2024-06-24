@@ -9,8 +9,10 @@ namespace CloudDev_POE
 {
     public partial class MyWork : System.Web.UI.Page
     {
+        
         DataAccess da = new DataAccess();
         static List<Product> product = new List<Product>();
+        public static List<Product> cart = new List<Product>();
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -23,8 +25,7 @@ namespace CloudDev_POE
 
         protected void btnAddToCart_Command(object sender, CommandEventArgs e)
         {
-
-
+            //
         }
 
 
@@ -42,5 +43,7 @@ namespace CloudDev_POE
                 }
             }
         }
+
+
     }
 }

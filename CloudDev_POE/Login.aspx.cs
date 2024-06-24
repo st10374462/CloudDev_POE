@@ -21,6 +21,7 @@ namespace CloudDev_POE
             User temp = da.LoginUser(edtLoginEmail.Text.ToString(), edtLoginPassword.Text.ToString());
             if (temp != null)
             {
+                UserHolder.loggedInUser = temp;
                 Response.Redirect("~/Home");
             }
             else
